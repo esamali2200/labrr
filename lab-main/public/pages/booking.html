@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحجز - مختبر القلب</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <!-- المحتوى الرئيسي -->
+    <main>
+        <section class="booking">
+            <div class="container">
+                <h2>الحجز</h2>
+                <form action="submit_booking.php" method="post">
+                    <div class="form-group">
+                        <label for="name">الاسم الكامل:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">رقم الهاتف:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">تاريخ الحجز:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">وقت الحجز:</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                    <button type="submit">إرسال</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <div id="footer-placeholder"></div>
+    
+    <script src="../js/script.js"></script>
+</body>
+</html>

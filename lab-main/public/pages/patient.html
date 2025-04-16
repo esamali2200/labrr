@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم المريض</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- مكان الهيدر الذي سيتم تحميله ديناميكياً -->
+    <div id="header-placeholder"></div>
+
+    <!-- الحاوية الرئيسية للوحة التحكم -->
+    <div class="dashboard-container">
+        <!-- القائمة الجانبية - تحتوي على معلومات المستخدم والقائمة -->
+        <div class="dashboard-sidebar">
+            <!-- معلومات المستخدم - الصورة والاسم -->
+            <div class="user-info">
+                <!-- حاوية الصورة الشخصية مع زر التعديل -->
+                <div class="avatar-container">
+                    <img src="/api/placeholder/100/100" alt="صورة المستخدم" id="userAvatar" class="user-avatar">
+                    <!-- زر تغيير الصورة -->
+                    <div class="avatar-edit">
+                        <label for="avatarUpload" class="avatar-edit-btn">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <h3 id="userName">اسم المستخدم</h3>
+            </div>
+
+            <!-- قائمة التنقل الجانبية -->
+            <ul class="dashboard-menu">
+                <li class="active"><a href="#profile">الملف الشخصي</a></li>
+                <li><a href="#appointments">المواعيد</a></li>
+                <li><a href="#tests">نتائج التحاليل</a></li>
+                <li><a href="#settings">الإعدادات</a></li>
+            </ul>
+                              
+            <!-- زر تسجيل الخروج في القائمة الجانبية فقط -->
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                تسجيل الخروج
+            </button>
+        </div>
+
+        <!-- المحتوى الرئيسي - يعرض محتوى القسم المحدد -->
+        <div class="dashboard-content">
+            <!-- قسم الملف الشخصي - معلومات المستخدم -->
+            <section id="profile" class="dashboard-section">
+                <h2>الملف الشخصي</h2>
+                <div class="profile-info">
+                    <p><strong>الاسم الكامل:</strong> <span id="fullName">اسم المستخدم</span></p>
+                    <p><strong>البريد الإلكتروني:</strong> <span id="email">email@example.com</span></p>
+                    <p><strong>رقم الهاتف:</strong> <span id="phone">1234567890</span></p>
+                    <p><strong>العمر:</strong> <span id="age">30</span></p>
+                    <p><strong>نوع الدم:</strong> <span id="bloodType">O+</span></p>
+                    <p><strong>الطول:</strong> <span id="height">170 سم</span></p>
+                </div>
+            </section>
+
+            <!-- قسم المواعيد -->
+            <section id="appointments" class="dashboard-section hidden">
+                <div class="section-header">
+                    <h2>المواعيد</h2>
+                    <button class="btn-primary" onclick="showBookingForm()">
+                        <i class="fas fa-plus"></i> حجز موعد جديد
+                    </button>
+                </div>
+
+                <!-- نموذج حجز موعد جديد -->
+                <div id="bookingForm" class="booking-form hidden">
+                    <form id="newAppointmentForm">
+                        <div class="form-group">
+                            <label for="appointmentDate">تاريخ الموعد</label>
+                            <input type="date" id="appointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime">وقت الموعد</label>
+                            <select id="appointmentTime" required>
+                                <option value="">اختر الوقت</option>
+                                <option value="09:00">09:00 صباحاً</option>
+                                <option value="10:00">10:00 صباحاً</option>
+                                <option value="11:00">11:00 صباحاً</option>
+                                <option value="12:00">12:00 ظهراً</option>
+                                <option value="13:00">01:00 مساءً</option>
+                                <option value="14:00">02:00 مساءً</option>
+                                <option value="15:00">03:00 مساءً</option>
+                                <option value="16:00">04:00 مساءً</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="testType">نوع التحليل</label>
+                            <select id="testType" required>
+                                <option value="">اختر نوع التحليل</option>
+                                <option value="blood">تحليل دم شامل</option>
+                                <option value="diabetes">تحليل السكر</option>
+                                <option value="cholesterol">تحليل الكوليسترول</option>
+                                <option value="liver">وظائف الكبد</option>
+                                <option value="kidney">وظائف الكلى</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">ملاحظات إضافية</label>
+                            <textarea id="notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-success">تأكيد الحجز</button>
+                            <button type="button" class="btn-secondary" onclick="hideBookingForm()">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- قائمة المواعيد -->
+                <div class="appointments-list">
+                    <div class="appointments-filter">
+                        <select id="statusFilter" onchange="filterAppointments()">
+                            <option value="all">جميع المواعيد</option>
+                            <option value="pending">قيد الانتظار</option>
+                            <option value="confirmed">مؤكدة</option>
+                            <option value="completed">مكتملة</option>
+                            <option value="cancelled">ملغية</option>
+                        </select>
+                    </div>
+                    <div id="appointmentsList">
+                        <!-- سيتم ملء هذا القسم بالمواعيد عبر JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم التحاليل في patient.html -->
+            <section id="tests" class="dashboard-section hidden">
+                <div class="section-header">
+                    <h2>نتائج التحاليل</h2>
+                    <div class="tests-filter">
+                        <select id="testStatusFilter" onchange="filterTests()">
+                            <option value="all">جميع التحاليل</option>
+                            <option value="completed">مكتملة</option>
+                            <option value="pending">قيد الانتظار</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- قائمة التحاليل -->
+                <div id="testsList" class="tests-list">
+                    <!-- سيتم ملء هذا القسم بالتحاليل عبر JavaScript -->
+                </div>
+
+                <!-- نموذج مشاركة نتائج التحليل -->
+                <div id="shareTestForm" class="share-form hidden">
+                    <div class="share-form-content">
+                        <h3>مشاركة نتائج التحليل</h3>
+                        <div class="form-group">
+                            <label for="shareEmail">البريد الإلكتروني</label>
+                            <input type="email" id="shareEmail" required>
+                        </div>
+                        <div class="form-actions">
+                            <button onclick="shareTest()" class="btn-primary">مشاركة</button>
+                            <button onclick="hideShareForm()" class="btn-secondary">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قالب بطاقة التحليل -->
+                <template id="testCardTemplate">
+                    <div class="test-card">
+                        <div class="test-header">
+                            <div class="test-info">
+                                <h3 class="test-type"></h3>
+                                <span class="test-date"></span>
+                            </div>
+                            <span class="test-status"></span>
+                        </div>
+                        <div class="test-details">
+                            <!-- تفاصيل التحليل -->
+                        </div>
+                        <div class="test-actions">
+                            <button class="btn-primary view-results" onclick="viewResults(this)">
+                                عرض النتائج
+                            </button>
+                            <button class="btn-secondary share-results" onclick="showShareForm(this)">
+                                مشاركة النتائج
+                            </button>
+                            <a class="btn-primary download-pdf" href="#" target="_blank">
+                                تحميل PDF
+                            </a>
+                        </div>
+                    </div>
+                </template>
+            </section>
+
+            <!-- قسم الإعدادات - تعديل المعلومات الشخصية -->
+            <!-- قسم الإعدادات - تحديث الملف الشخصي -->
+<section id="settings" class="dashboard-section hidden">
+    <h2>تحديث الملف الشخصي</h2>
+    
+    <!-- عرض حالة طلب التحديث إذا كان موجوداً -->
+    <div id="updateRequestStatus" class="update-request-status hidden">
+        <div class="status-card pending">
+            <div class="status-header">
+                <i class="fas fa-clock"></i>
+                <span>طلب تحديث معلق</span>
+            </div>
+            <div class="status-content">
+                <p>تم إرسال طلب تحديث البيانات وهو قيد المراجعة من قبل الإدارة.</p>
+                <button onclick="cancelUpdateRequest()" class="btn-danger">
+                    <i class="fas fa-times"></i> إلغاء الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تحديث البيانات -->
+    <div class="settings-form">
+        <form id="updateProfileForm">
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="editFullName" name="fullName" required>
+            </div>
+            
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="editPhone" name="phoneNumber" required 
+                       pattern="[0-9]{10}" title="يرجى إدخال رقم هاتف صحيح">
+            </div>
+
+            <div class="form-group">
+                <label>العمر</label>
+                <input type="number" id="editAge" name="age" required
+                       min="1" max="150">
+            </div>
+
+            <div class="form-group">
+                <label>فصيلة الدم</label>
+                <select id="editBloodType" name="bloodType" required>
+                    <option value="">اختر فصيلة الدم</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>العنوان</label>
+                <textarea id="editAddress" name="address" required
+                          rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>ملاحظات طبية</label>
+                <textarea id="editMedicalNotes" name="medicalNotes"
+                          rows="3" placeholder="أي معلومات طبية مهمة مثل الحساسية أو الأمراض المزمنة"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> إرسال طلب التحديث
+                </button>
+                <button type="reset" class="btn-secondary">
+                    <i class="fas fa-undo"></i> إعادة تعيين
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+        </div>
+    </div>
+
+    <!-- مكان الفوتر الذي سيتم تحميله ديناميكياً -->
+    <div id="footer-placeholder"></div>
+
+    <!-- تحميل الهيدر والفوتر ديناميكياً -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../components/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                });
+
+            fetch('../components/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer-placeholder').innerHTML = data;
+                });
+
+            // تحميل بيانات المستخدم وعرضها في الملف الشخصي
+            loadUserProfile();
+
+            // تحميل نتائج التحليل المشتركة
+            loadSharedTestResults();
+        });
+
+        // تحميل بيانات المستخدم
+        function loadUserProfile() {
+            fetch('/api/user/profile')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('fullName').textContent = data.fullName;
+                    document.getElementById('email').textContent = data.email;
+                    document.getElementById('phone').textContent = data.phone;
+                    document.getElementById('age').textContent = data.age;
+                    document.getElementById('bloodType').textContent = data.bloodType;
+                    document.getElementById('height').textContent = data.height;
+
+                    // تعبئة حقول الإعدادات
+                    document.getElementById('editFullName').value = data.fullName;
+                    document.getElementById('editEmail').value = data.email;
+                    document.getElementById('editPhone').value = data.phone;
+                    document.getElementById('editAge').value = data.age;
+                    document.getElementById('editBloodType').value = data.bloodType;
+                    document.getElementById('editHeight').value = data.height;
+                })
+                .catch(error => console.error('Error loading user profile:', error));
+        }
+
+        // تحميل نتائج التحليل المشتركة
+        function loadSharedTestResults() {
+            const testDetails = document.getElementById('testDetails');
+            const sharedTest = JSON.parse(localStorage.getItem('sharedTest'));
+
+            if (sharedTest) {
+                document.getElementById('sharedTestResults').classList.remove('hidden');
+                testDetails.innerHTML = `
+                    <h2>${getTestTypeName(sharedTest.testType)}</h2>
+                    <p>تاريخ التحليل: ${new Date(sharedTest.testDate).toLocaleDateString('ar-SA')}</p>
+                    <p>الحالة: ${getStatusText(sharedTest.status)}</p>
+                    ${sharedTest.status === 'completed' ? getTestResultsHtml(sharedTest.results) : 'التحليل قيد المعالجة'}
+                `;
+            } else {
+                testDetails.innerHTML = '<p>لا توجد بيانات لعرضها</p>';
+            }
+        }
+
+        // الحصول على نص حالة التحليل
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'قيد المعالجة',
+                'completed': 'مكتمل'
+            };
+            return statusMap[status] || status;
+        }
+
+        // الحصول على اسم نوع التحليل
+        function getTestTypeName(type) {
+            const testTypes = {
+                'blood': 'تحليل دم شامل',
+                'diabetes': 'تحليل السكر',
+                'cholesterol': 'تحليل الكوليسترول',
+                'liver': 'وظائف الكبد',
+                'kidney': 'وظائف الكلى'
+            };
+            return testTypes[type] || type;
+        }
+
+        // تحويل نتائج التحليل إلى HTML
+        function getTestResultsHtml(results) {
+            if (!results || !results.values) return '';
+
+            let html = `<div class="results-summary">${results.summary || ''}</div>`;
+            
+            html += '<div class="results-values">';
+            results.values.forEach(value => {
+                html += `
+                    <div class="test-value">
+                        <span class="value-name">${value.name}</span>
+                        <span class="value-data">
+                            ${value.value} ${value.unit}
+                            <small>(المعدل الطبيعي: ${value.normalRange})</small>
+                        </span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            return html;
+        }
+
+        // حفظ التغييرات في الإعدادات
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const updatedProfile = {
+                fullName: document.getElementById('editFullName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                age: document.getElementById('editAge').value,
+                bloodType: document.getElementById('editBloodType').value,
+                height: document.getElementById('editHeight').value
+            };
+
+            fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedProfile)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // تحديث البيانات في الملف الشخصي
+                    loadUserProfile();
+                    alert('تم حفظ التغييرات بنجاح');
+                } else {
+                    alert('فشل في حفظ التغييرات');
+                }
+            })
+            .catch(error => console.error('Error saving user profile:', error));
+        });
+    </script>
+
+    <!-- ملف JavaScript للتحكم بالوظائف -->
+    <script src="../js/script.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/tests.js"></script>
+</body>
+</html>

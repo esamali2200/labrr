@@ -1,0 +1,280 @@
+import Auth from './auth.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // التحقق من المصادقة للصفحات المحمية
+    if (window.location.pathname === '/admin' || window.location.pathname === '/patient') {
+        if (!Auth.checkAuth()) return;
+        Auth.verifyToken();
+    }
+
+    // تحميل الهيدر والفوتر
+    async function loadHeader() {
+        try {
+            const response = await fetch('/components/header.html');
+            const data = await response.text();
+            document.getElementById('header-placeholder').innerHTML = data;
+            
+            const faBars = document.querySelector('.fa-bars');
+            const faTimes = document.querySelector('.fa-times');
+            if (faBars && faTimes) {
+                faBars.addEventListener('click', showMenu);
+                faTimes.addEventListener('click', hideMenu);
+            }
+        } catch (error) {
+            console.error('Error loading header:', error);
+        }
+    }
+
+    async function loadFooter() {
+        try {
+            const response = await fetch('/components/footer.html');
+            const data = await response.text();
+            document.getElementById('footer-placeholder').innerHTML = data;
+        } catch (error) {
+            console.error('Error loading footer:', error);
+        }
+    }
+
+    loadHeader();
+    loadFooter();
+
+    // زر تسجيل الخروج
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => Auth.logout());
+    }
+
+    // نموذج تسجيل الدخول
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userRole', data.user.role);
+                    window.location.href = data.user.role.toLowerCase() === 'admin' ? '/admin' : '/patient';
+                } else {
+                    alert(data.message || 'فشل تسجيل الدخول');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء تسجيل الدخول');
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+    const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('./models/User');
+const path = require('path');
+const auth = require('./middleware/auth');
+const cookieParser = require('cookie-parser');
+
+// استيراد المسارات
+const userRoutes = require('./routes/userRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// توصيل قاعدة البيانات وإعداد الأدمن
+mongoose.connect('mongodb+srv://lab_12:EsamAli2002@cluster0.m2naw.mongodb.net/lab_alq?retryWrites=true&w=majority')
+    .then(async () => {
+        console.log('Connected to MongoDB Successfully');
+        try {
+            const adminExists = await User.findOne({ username: 'admin' });
+            if (!adminExists) {
+                const mainAdmin = new User({
+                    username: 'admin',
+                    password: await bcrypt.hash('admin123456', 10),
+                    role: 'admin'
+                });
+                await mainAdmin.save();
+                console.log('Main admin account created');
+            }
+        } catch (error) {
+            console.error('Error in initial setup:', error);
+        }
+    })
+    .catch(err => {
+        console.error('MongoDB Connection Error:', err);
+    });
+
+// مسار التسجيل
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { username, password, email } = req.body;
+
+        const userExists = await User.findOne({ username });
+        if (userExists) {
+            return res.status(400).json({ message: 'اسم المستخدم موجود مسبقاً' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({
+            username,
+            password: hashedPassword,
+            email,
+            role: 'user'
+        });
+
+        await user.save();
+        res.status(201).json({ 
+            success: true,
+            message: 'تم التسجيل بنجاح'
+        });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'حدث خطأ في التسجيل' });
+    }
+});
+
+// مسار تسجيل الدخول
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
+        }
+
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '24h' }
+        );
+
+        // إعداد الكوكيز
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000 // 24 ساعة
+        });
+
+        res.json({
+            success: true,
+            user: {
+                username: user.username,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'حدث خطأ في تسجيل الدخول' });
+    }
+});
+
+// مسار تسجيل الخروج
+app.post('/api/auth/logout', auth, (req, res) => {
+    res.clearCookie('token');
+    res.json({ message: 'تم تسجيل الخروج بنجاح' });
+});
+
+// API routes
+app.use('/api/users', auth, userRoutes);
+app.use('/api/bookings', auth, bookingRoutes);
+app.use('/api/admin', auth, adminRoutes);
+
+// مسارات الصفحات
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pages', 'index.html'));
+});
+
+// ... باقي مسارات الصفحات كما هي ...
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+// نموذج تسجيل الدخول
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userRole', data.user.role);
+
+                if (data.user.role.toLowerCase() === 'admin') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/patient';
+                }
+            } else {
+                alert(data.message || 'فشل تسجيل الدخول');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء تسجيل الدخول');
+        }
+    });
+}
+
+// تحديث وظيفة تسجيل الخروج
+const Auth = {
+    logout() {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            window.location.href = '/login';
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            // حتى لو فشل الطلب، نقوم بتسجيل الخروج محلياً
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            window.location.href = '/login';
+        });
+    },
+    // ... باقي الوظائف كما هي
+};

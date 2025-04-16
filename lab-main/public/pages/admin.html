@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- مكان الهيدر الذي سيتم تحميله ديناميكياً -->
+    <div id="header-placeholder"></div>
+
+    <div class="admin-dashboard">
+        <!-- القائمة الجانبية -->
+        <div class="admin-sidebar">
+            <div class="admin-info">
+    
+                <div class="admin-avatar">
+                    <img src="/api/placeholder/100/100" alt="صورة الأدمن">
+                </div>
+                <h3>مدير النظام</h3>
+            </div>
+
+            <ul class="admin-menu">
+                <li class="active"><a href="#overview">نظرة عامة</a></li>
+                <li><a href="#users">إدارة المستخدمين</a></li>
+                <li><a href="#appointments">المواعيد</a></li>
+                <li><a href="#tests">التحاليل</a></li>
+                <li><a href="#requests">طلبات التحديث</a></li>
+            </ul>
+
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                تسجيل الخروج
+            </button>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="admin-content">
+            <!-- نظرة عامة -->
+            <section id="overview" class="admin-section">
+                <h2>نظرة عامة</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>المرضى</h3>
+                            <p id="totalUsers">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>المواعيد اليوم</h3>
+                            <p id="todayAppointments">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>التحاليل المعلقة</h3>
+                            <p id="pendingTests">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>طلبات التحديث</h3>
+                            <p id="updateRequests">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- إدارة المستخدمين -->
+            <section id="users" class="admin-section hidden">
+                <h2>إدارة المستخدمين</h2>
+                <div class="users-controls">
+                    <div class="search-box">
+                        <input type="text" id="userSearch" placeholder="بحث عن مستخدم...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>الاسم الكامل</th>
+                                <th>اسم المستخدم</th>
+                                <th>رقم الهاتف</th>
+                                <th>العمر</th>
+                                <th>فصيلة الدم</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList">
+                            <!-- سيتم تحميل المستخدمين هنا -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- المواعيد -->
+            <section id="appointments" class="admin-section hidden">
+                <h2>إدارة المواعيد</h2>
+                <div class="appointments-calendar">
+                    <div class="calendar-controls">
+                        <input type="date" id="appointmentDate">
+                        <select id="appointmentStatus">
+                            <option value="all">جميع المواعيد</option>
+                            <option value="pending">معلقة</option>
+                            <option value="confirmed">مؤكدة</option>
+                            <option value="completed">مكتملة</option>
+                        </select>
+                    </div>
+                    <div id="appointmentsList" class="appointments-list">
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- التحاليل -->
+            <section id="tests" class="admin-section hidden">
+                <h2>إدارة التحاليل</h2>
+                <div class="tests-controls">
+                    <select id="testStatus">
+                        <option value="all">جميع التحاليل</option>
+                        <option value="pending">معلقة</option>
+                        <option value="completed">مكتملة</option>
+                    </select>
+                </div>
+                <div id="testsList" class="tests-list">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </section>
+
+            <!-- طلبات التحديث -->
+            <section id="requests" class="admin-section hidden">
+                <h2>طلبات تحديث البيانات</h2>
+                <div class="update-requests-list" id="updateRequestsList">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- مكان الفوتر الذي سيتم تحميله ديناميكياً -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // تحميل الهيدر والفوتر ديناميكياً
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/components/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading header:', error));
+
+            fetch('/components/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer-placeholder').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading footer:', error));
+        });
+    </script>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>

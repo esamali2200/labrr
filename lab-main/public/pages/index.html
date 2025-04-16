@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALQALB Laboratory</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <section class="home">
+       <div class="home-bg-video">
+            <video autoplay loop muted playsinline>
+                <source src="./lab-img/6450eee4000ac132f945f05d_video-transcode.mp4" type="video/mp4">
+                <source src="https://cdn.prod.website-files.com/6450ceffeba5aab3179b030a/6450eee4000ac132f945f05d_video-transcode.webm" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="text-overlay">
+            <h1>مرحبًا بكم في مختبر القلب</h1>
+            <p>نحن نقدم أفضل الخدمات المخبرية</p>
+        </div>
+    </section>
+      
+    <script src="../js/script.js"></script>
+
+<!-- القسم الثاني: الخدمات -->
+<section id="home-services">
+    <h2>خدماتنا</h2>
+    <div class="home-container">
+        <!-- محتوى الخدمات -->
+    </div>
+    <div class="home-service-box">
+        <div class="home-service">
+            <i class="fas fa-flask"></i>
+            <h3>تحليل الدم</h3>
+            <p>خدمة متخصصة لتحليل الدم بأحدث الأجهزة.</p>
+        </div>
+        <div class="home-service">
+            <i class="fas fa-vial"></i>
+            <h3>تحاليل البول</h3>
+            <p>تقديم نتائج دقيقة في وقت قياسي.</p>
+        </div>
+        <div class="home-service">
+            <i class="fas fa-heartbeat"></i>
+            <h3>اختبارات وظائف القلب</h3>
+            <p>اختبارات متقدمة لتقييم صحة القلب.</p>
+        </div>
+    </div>
+</section>
+
+    <!-- القسم الثالث: فريق العمل -->
+    <section id="team">
+        <h2>فريق العمل</h2>
+        <p>نحن فريق من المتخصصين لضمان أفضل خدمة.</p>
+        <div class="team-box">
+            <div class="team-member">
+                <img src="img_lab/WhatsApp Image 2024-12-23 at 14.04.04_4dbd770f.jpg" alt="عضو فريق">
+                <h3>د. أحمد علي</h3>
+                <p>أخصائي تحاليل طبية</p>
+            </div>
+            <div class="team-member">
+                <img src="img_lab/WhatsApp Image 2024-12-23 at 14.05.05_dadbe418.jpg" alt="عضو فريق">
+                <h3>د. محمد</h3>
+                <p>أخصائية مختبرات</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- القسم الرابع: تواصل -->
+    <section class="contact">
+        <h2>تواصل معنا</h2>
+        <form action="submit_form.php" method="POST">
+            <input type="text" name="name" placeholder="اسمك" required>
+            <input type="email" name="email" placeholder="بريدك الإلكتروني" required>
+            <textarea name="message" placeholder="رسالتك" required></textarea>
+            <button type="submit" class="hero-btn">إرسال</button>
+        </form>
+    </section>
+
+    <div id="footer-placeholder"></div>
+</body>
+</html>

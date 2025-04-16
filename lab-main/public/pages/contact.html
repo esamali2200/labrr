@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا - مختبر القلب</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <!-- المحتوى الرئيسي -->
+    <main>
+        <section class="contact">
+            <div class="container">
+                <h2>تواصل معنا</h2>
+                <form action="submit_contact.php" method="post">
+                    <div class="form-group">
+                        <label for="name">الاسم الكامل:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">رسالتك:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit">إرسال</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- قسم الخريطة -->
+        <section class="map">
+            <div class="container">
+                <h2>موقعنا</h2>
+                <div id="map"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function initMap() {
+            var location = {lat: 32.4674, lng: 14.5687}; // إحداثيات زليتن، ليبيا
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: location
+            });
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+    </script>
+    <script async defer src="32°27'16.5"N 14°33'42.8"E"></script>
+
+    <div id="footer-placeholder"></div>
+</body>
+</html>
